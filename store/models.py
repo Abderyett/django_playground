@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+
 class Promotion (models.Model):
     description = models.CharField(max_length=255)
     discount=models.FloatField()
@@ -19,6 +20,7 @@ class Product(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
+
 
 
 class Customer(models.Model):
