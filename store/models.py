@@ -2,25 +2,28 @@ from django.db import models
 
 # Create your models here.
 
-class Promotion (models.Model):
+
+class Promotion(models.Model):
     description = models.CharField(max_length=255)
-    discount=models.FloatField()
+    discount = models.FloatField()
+
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
-        'Product', on_delete=models.SET_NULL, null=True, related_name='+')
+        "Product", on_delete=models.SET_NULL, null=True, related_name="+"
+    )
 
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField(default='-')
     description = models.TextField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     inventory = models.IntegerField()
     last_updated = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
-
 
 
 class Customer(models.Model):
@@ -87,6 +90,4 @@ class Adresse(models.Model):
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-
-
-
+    zip = models.CharField(max_length=255, null=True)
