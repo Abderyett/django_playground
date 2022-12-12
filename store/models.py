@@ -59,6 +59,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    # We have order wich is foreing key Django create reverse relationship for us in Order called orderitem_set
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()

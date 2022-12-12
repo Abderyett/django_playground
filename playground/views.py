@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Q, F
-from store.models import Product,OrderItem
+from store.models import Product,OrderItem, Order
 
 
 def say_hello(request):
@@ -40,6 +40,17 @@ def say_hello(request):
     
     
     #? Select Product that have been ordered and sort them by title
-    queryset=Product.objects.filter(id__in=OrderItem.objects.values("product_id").distinct())
+    
+    # queryset=Product.objects.filter(id__in=OrderItem.objects.values("product_id").distinct())
+    
+    
+    #* . Selecting Related
+    
+    # We use prefetch related whne we have ManytoMany
+    # queryset=Product.objects.select_related("collection").all()
+    # We use select_related related whne we have ManytoMany
+    # queryset=Product.objects.prefetch_related("promotions").select_related("collection").all()
 
-    return render(request, "hello.html", {"name": "AbderYett","products":list(queryset)})
+    queryset=Order.objects.select_related("customer").prefetch_related("orderitem_set__product").order_by("-placed_at")[:5]
+    
+    return render(request, "hello.html", {"name": "AbderYett","orders":list(queryset)})
