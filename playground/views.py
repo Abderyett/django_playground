@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.db.models import Q, F
-from store.models import Product,OrderItem, Order
+from django.db.models import Q, F,Value,Func,ExpressionWrapper
+from store.models import Product,OrderItem, Order,Customer
+from django.db.models.aggregates import Count,Min, Max
 
 
 def say_hello(request):
@@ -51,6 +52,27 @@ def say_hello(request):
     # We use select_related related whne we have ManytoMany
     # queryset=Product.objects.prefetch_related("promotions").select_related("collection").all()
 
-    queryset=Order.objects.select_related("customer").prefetch_related("orderitem_set__product").order_by("-placed_at")[:5]
+    # queryset=Order.objects.select_related("customer").prefetch_related("orderitem_set__product").order_by("-placed_at")[:5]
     
-    return render(request, "hello.html", {"name": "AbderYett","orders":list(queryset)})
+    #* Agregate object
+    
+    # queryset=Product.objects.aggregate(count=Count('id'),max_price=Max("unit_price"))
+    
+    
+    #* Annotate
+    # queryset=Customer.objects.annotate(new_id=F('id'))
+    
+    #* Database function for
+    # queryset=Customer.objects.annotate(full_name=Func(F('first_name'),Value(' '),F('last_name'),function='CONCAT'))
+    
+    #* Grouping data
+    
+    # queryset = Customer.objects.annotate(order_count=Count("order"))
+    discounted_price= ExpressionWrapper(F('unit_price')* 0.8, output_field=DecimalField())
+    queryset = Product.objects.annotate(discounted_price=discounted_price)
+    # Expression Wrapper
+    
+    
+    
+    
+    return render(request, "hello.html", {"name": "AbderYett","result":list(queryset)})
